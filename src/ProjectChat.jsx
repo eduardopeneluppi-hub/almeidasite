@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import logo from './assets/logo-almeida.png'
 import BlurText from './BlurText'
-import { WHATSAPP_NUMBER } from './theme'
+import { WHATSAPP_NUMBER, brandRedGradient } from './theme'
 
 export default function ProjectChat() {
   const [message, setMessage] = useState('')
@@ -144,6 +144,13 @@ export default function ProjectChat() {
           <p className="mt-6 text-center text-xs text-neutral-400">
             Pressione enter ou toque em enviar — abrimos o WhatsApp com sua mensagem pronta.
           </p>
+
+          <div
+            className="mx-auto mt-8 flex h-20 w-20 items-center justify-center rounded-full shadow-[0_10px_25px_-8px_rgba(200,0,0,0.55)]"
+            style={{ background: brandRedGradient }}
+          >
+            <img src={logo} alt="Almeida Móveis Planejados" className="h-10 w-auto" draggable={false} />
+          </div>
         </div>
       </section>
     </div>
