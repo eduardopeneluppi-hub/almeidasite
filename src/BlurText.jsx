@@ -24,12 +24,17 @@ const BlurText = ({
   easing = (t) => t,
   onAnimationComplete,
   stepDuration = 0.35,
+  active,
 }) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('')
   const [inView, setInView] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
+    if (active !== undefined) {
+      if (active) setInView(true)
+      return
+    }
     if (!ref.current) return
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -42,7 +47,7 @@ const BlurText = ({
     )
     observer.observe(ref.current)
     return () => observer.disconnect()
-  }, [threshold, rootMargin])
+  }, [threshold, rootMargin, active])
 
   const defaultFrom = useMemo(
     () =>

@@ -40,16 +40,15 @@ function App() {
         />
 
         <div className="relative z-10 flex flex-col items-center px-6 pt-36 text-center sm:pt-40">
-          {!showIntro && (
-            <BlurText
-              text="Móveis planejados que transformam espaços"
-              delay={250}
-              stepDuration={0.8}
-              animateBy="words"
-              direction="top"
-              className="max-w-3xl justify-center text-3xl uppercase leading-[1.15] text-white [font-family:var(--font-display)] sm:text-5xl"
-            />
-          )}
+          <BlurText
+            text="Móveis planejados que transformam espaços"
+            delay={250}
+            stepDuration={0.8}
+            animateBy="words"
+            direction="top"
+            active={!showIntro}
+            className="max-w-3xl justify-center text-3xl uppercase leading-[1.15] text-white [font-family:var(--font-display)] sm:text-5xl"
+          />
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-16 sm:pt-20">
