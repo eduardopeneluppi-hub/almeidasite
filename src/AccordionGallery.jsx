@@ -33,11 +33,11 @@ const AccordionGallery = ({
   whatsappNumber = '',
 }) => {
   const rootRef = useRef(null)
-  const activatedAtRef = useRef(0)
   const count = items.length
   const [active, setActive] = useState(Math.min(Math.max(defaultIndex, 0), count - 1))
   const [mediaSize, setMediaSize] = useState(320)
   const [isNarrow, setIsNarrow] = useState(false)
+  const [revealedCta, setRevealedCta] = useState(null)
 
   const vertical = orientation === 'vertical' || isNarrow
   const ratio = Math.min(Math.max(expandRatio, 0.2), 0.9)
@@ -63,6 +63,15 @@ const AccordionGallery = ({
     return () => ro.disconnect()
   }, [gap, count, ratio, orientation])
 
+  // The CTA link only becomes clickable a moment after a panel activates.
+  // This is a real (not just a timed check) pointer-events gate, so a tap
+  // that expands a panel can never be retargeted onto the CTA underneath it.
+  useEffect(() => {
+    setRevealedCta(null)
+    const t = setTimeout(() => setRevealedCta(active), 550)
+    return () => clearTimeout(t)
+  }, [active])
+
   const handleEnter = (i) => {
     if (trigger === 'hover') setActive(i)
   }
@@ -70,13 +79,11 @@ const AccordionGallery = ({
   const handleClick = (i, e) => {
     if (i !== active) {
       e.preventDefault()
-      activatedAtRef.current = Date.now()
       setActive(i)
     }
   }
 
   const handleFocus = (i) => {
-    if (i !== active) activatedAtRef.current = Date.now()
     setActive(i)
   }
 
@@ -90,8 +97,8 @@ const AccordionGallery = ({
     }
   }
 
-  const handleCtaClick = (e) => {
-    if (Date.now() - activatedAtRef.current < 400) {
+  const handleCtaClick = (i, e) => {
+    if (revealedCta !== i) {
       e.preventDefault()
       e.stopPropagation()
       return
@@ -187,13 +194,13 @@ const AccordionGallery = ({
                   href={whatsappNumber ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Gostaria de solicitar um orçamento para ${item.label}.`)}` : '#'}
                   target={whatsappNumber ? '_blank' : undefined}
                   rel={whatsappNumber ? 'noopener noreferrer' : undefined}
-                  onClick={handleCtaClick}
-                  tabIndex={isActive ? 0 : -1}
+                  onClick={(e) => handleCtaClick(i, e)}
+                  tabIndex={revealedCta === i ? 0 : -1}
                   style={{
                     opacity: isActive ? 1 : 0,
                     transform: isActive ? 'translateX(0)' : 'translateX(-14px)',
                     transitionDelay: isActive ? `${stagger * 3}s` : '0s',
-                    pointerEvents: isActive ? 'auto' : 'none',
+                    pointerEvents: revealedCta === i ? 'auto' : 'none',
                   }}
                 >
                   {ctaLabel}
