@@ -33,6 +33,7 @@ const AccordionGallery = ({
   whatsappNumber = '',
 }) => {
   const rootRef = useRef(null)
+  const activatedAtRef = useRef(0)
   const count = items.length
   const [active, setActive] = useState(Math.min(Math.max(defaultIndex, 0), count - 1))
   const [mediaSize, setMediaSize] = useState(320)
@@ -69,8 +70,14 @@ const AccordionGallery = ({
   const handleClick = (i, e) => {
     if (i !== active) {
       e.preventDefault()
+      activatedAtRef.current = Date.now()
       setActive(i)
     }
+  }
+
+  const handleFocus = (i) => {
+    if (i !== active) activatedAtRef.current = Date.now()
+    setActive(i)
   }
 
   const handleKeyDown = (i, e) => {
@@ -81,6 +88,16 @@ const AccordionGallery = ({
       e.preventDefault()
       setActive((i - 1 + count) % count)
     }
+  }
+
+  const handleCtaClick = (e) => {
+    if (Date.now() - activatedAtRef.current < 400) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
+    e.stopPropagation()
+    if (!whatsappNumber) e.preventDefault()
   }
 
   return (
@@ -120,7 +137,7 @@ const AccordionGallery = ({
             href={item.link || undefined}
             onClick={(e) => handleClick(i, e)}
             onMouseEnter={() => handleEnter(i)}
-            onFocus={() => setActive(i)}
+            onFocus={() => handleFocus(i)}
             onKeyDown={(e) => handleKeyDown(i, e)}
             role="listitem"
             tabIndex={0}
@@ -170,10 +187,7 @@ const AccordionGallery = ({
                   href={whatsappNumber ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Gostaria de solicitar um orçamento para ${item.label}.`)}` : '#'}
                   target={whatsappNumber ? '_blank' : undefined}
                   rel={whatsappNumber ? 'noopener noreferrer' : undefined}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (!whatsappNumber) e.preventDefault()
-                  }}
+                  onClick={handleCtaClick}
                   tabIndex={isActive ? 0 : -1}
                   style={{
                     opacity: isActive ? 1 : 0,
